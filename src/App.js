@@ -28,6 +28,14 @@ function reducer(state, {type, payload}){
       if (state.currentOperand == null && state.previousOperand == null) {
         return state
       }
+      if (state.currentOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          previousOperand: state.currentOperand,
+          currentOperand: null,
+        }
+      }
       if (state.previousOperand == null) {
         return {
           ...state,
@@ -36,10 +44,40 @@ function reducer(state, {type, payload}){
           currentOperand: null,
         }
       }
+        return {
+          ...state,
+          previousOperand: evaluate(state),
+          operation: payload.operation,
+          currentOperand: null
+        }
     case ACTIONS.CLEAR:
       return{}
       // removes all if you click AC
   }
+}
+
+function evaluate({ currentOperand, previousOperand, operation}) {
+  const prev = parseFloat(previousOperand)
+  const current = parseFloat(currentOperand)
+  if(isNaN(prev) || isNaN(current)) return ""
+  let computation = ""
+  switch (operation) {
+    case "+":
+      computation = prev + current
+      break
+    case "-":
+      computation = prev - current
+      break
+    case "*":
+      computation = prev * current
+      break
+    case "/":
+      computation = prev / current
+      break
+    
+  }
+
+  return computation.toString();
 }
 
 function App() {
@@ -59,7 +97,7 @@ function App() {
       <DigitButton digit="1" dispatch={dispatch}/>
       <DigitButton digit="2" dispatch={dispatch}/>
       <DigitButton digit="3" dispatch={dispatch}/>
-      <OperationButton operation="x" dispatch={dispatch}/>
+      <OperationButton operation="*" dispatch={dispatch} />
       <DigitButton digit="4" dispatch={dispatch}/>
       <DigitButton digit="5" dispatch={dispatch}/>
       <DigitButton digit="6" dispatch={dispatch}/>
